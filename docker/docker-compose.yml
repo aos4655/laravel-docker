@@ -1,0 +1,44 @@
+services:
+    mysql:
+        image: mysql
+        container_name: mysql-laravel11-docker
+        tty: true
+        networks:
+            - laravel11-docker
+        ports:
+            - 4202:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: 1234
+            MYSQL_DATABASE: laravel
+            MYSQL_USER: miusuario
+            MYSQL_PASSWORD: mipassword
+        volumes:
+            - ./var/libclea/mysql:/var/lib/mysql
+        restart: "always"
+    apache:
+        build: .
+        container_name: apache-laravel11-docker
+        networks:
+          - laravel11-docker
+        ports:
+          - "9000:80"  
+        volumes:
+          - ./../laravel-app:/var/www/html  
+        restart: always
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin-laravel11-docker
+        networks:
+            - laravel11-docker
+        environment:
+            PMA_HOST: mysql-laravel11-docker
+            MYSQL_ROOT_PASSWORD: 1234
+        depends_on:
+            - mysql
+        ports:
+            - 4200:80
+        restart: "always"
+
+networks:
+    laravel11-docker:
+        driver: bridge
